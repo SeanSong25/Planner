@@ -259,9 +259,10 @@ export default {
 .buttonOne{
     display:block;
     width:100%;
+    font-size:3px;
     text-align:center;
-    margin-top:10px;
-    margin-bottom:10px;
+    margin-top:10px ! important;
+    margin-bottom:10px ! important;
 }
 .tableClass{
         margin-top : 5px;
