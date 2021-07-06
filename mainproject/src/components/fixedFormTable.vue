@@ -12,7 +12,7 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="SelectOptions"
+                 :options="options"
                  v-model="scope.row.Monday">
                 </el-cascader>
             </template> 
@@ -21,7 +21,7 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="SelectOptions"
+                 :options="options"
                  v-model="scope.row.Tuesday">
                 </el-cascader>
             </template>
@@ -30,7 +30,7 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="SelectOptions"
+                 :options="options"
                  v-model="scope.row.Wednesday">
                 </el-cascader>
             </template>
@@ -39,7 +39,7 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="SelectOptions"
+                 :options="options"
                  v-model="scope.row.Thursday">
                 </el-cascader>
             </template>
@@ -47,7 +47,7 @@
          <el-table-column prop="Friday" label="Friday">
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
-                 :options="SelectOptions"
+                 :options="options"
                  :key="cascaderKey"
                  v-model="scope.row.Friday">
                 </el-cascader>
@@ -57,7 +57,7 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="SelectOptions"
+                 :options="options"
                  v-model="scope.row.Saturday">
                 </el-cascader>
             </template>
@@ -65,7 +65,7 @@
          <el-table-column prop="Sunday" label="Sunday">
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
-                 :options="SelectOptions"
+                 :options="options"
                  :key="cascaderKey"
                  v-model="scope.row.Sunday">
                 </el-cascader>
@@ -98,9 +98,9 @@ export default {
             type:Array,
             default: () => {
                 return []
+                }
             }
         },
-    },
     name:"FixedFormTable",
     data(){
         return{
@@ -117,15 +117,19 @@ export default {
                 Saturday:'',
                 Sunday: ''
             },
+            options:[],
             multipleSelection:[],
         }
     },
     created(){
-        
+        this.cascaderKey = Date.now();
+        console.log("ss", this.SelectOptions)
     },
     watch:{
         SelectOptions(){
             this.cascaderKey = Date.now();
+            this.options = this.SelectOptions;
+            console.log("select options", this.SelectOptions)
         }
     },
     methods:{

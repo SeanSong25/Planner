@@ -63,6 +63,7 @@ export default {
             if(data.children.length>0){
               var newObj=[];
             for(let item of data.children){
+               
                 var tempObj = {
                     value:item.label,
                     label:item.label,
@@ -78,6 +79,7 @@ export default {
             }
 
             this.Options=newObj;
+            
             }
             
         },
@@ -100,20 +102,26 @@ export default {
             this.isPlan = true;
         },
         pushNewData(Obj, Id){
-            var newObj={
-                value:[],
-                Id : "",
-            }
+           
             if(Obj.length>0){
-                newObj.value = Obj;
-                newObj.Id = Id;
+                for(let item of Obj){
+                item.id = Id;
+                item.children=[]
             }
+            }   
+            
+            /*if(Obj.length>0){
+                newObj.value = Obj.value;
+                newObj.label = Obj.value;
+                newObj.Id = Id;
+            }*/
             var a = 0;
-            if((a = this.subOptArray.findIndex(d=>d.Id===newObj.Id)) !=-1){
-                this.subOptArray[a]={...newObj};
+            //updated suboptarray when update is called upon
+            if((a = this.subOptArray.findIndex(d=>d.Id===Obj[0].Id)) !=-1){
+                this.subOptArray[a]={...Obj};
             }
             else
-                this.subOptArray.push(newObj);
+                this.subOptArray.push(Obj);
             
         }
         

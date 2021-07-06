@@ -74,9 +74,13 @@
 
 <script>
 import axios from "axios";
-const baseURL = "http://localhost:3000/updateData"
-const nameURL = "http://localhost:3000/Names"
-const tempURL = "http://localhost:3000/TempData"
+const baseURL = "http://192.168.124.85:3003/formTable/1/Data"
+//const baseURL = "http://192.168.2.12:3003/formTable/1/Data"
+const nameURL = "http://192.168.124.85:3003/formTable/1/nameData"//
+//const nameURL = "http://192.168.2.12:3003/formTable/1/nameData"
+const tempURL = "http://192.168.124.85:3003/formTable/1/tempData"
+
+//const tempURL = "http://192.168.2.12:3003/formTable/1/tempData"
 export default {
     name:"updateFormTable",
     
@@ -92,13 +96,12 @@ export default {
             formKey:"helloWorld",
             title:[],
             propName:[
-                {title:"Title", key:-1}
             ],
             fieldData:[
             ],
             
             tempData:{
-                data:[{title:'Title',key:-1,value:''}],
+                data:[],
             },
             tempTitle:'',
             addFlag:true,
@@ -114,11 +117,14 @@ export default {
     async created(){
         
         const res = await axios.get(baseURL)
-        this.fieldData=res;
+        console.log(res.data)
+        this.fieldData=res.data;
         const resp = await axios.get(nameURL)
-        this.propName = resp;
+        console.log(resp.data)
+        this.propName = resp.data;
         const respo = await axios.get(tempURL)
-        this.tempData.data=respo;
+        this.tempData.data=respo.data;
+        this.sendOptions();
     },
     methods:{
         onAdd(){
@@ -136,9 +142,14 @@ export default {
                     key:this.columnCount,
                     value:''
                 }
-                
+                //let lastColName = this.propName[this.propName.length-1].title;
                 this.columnCount++;
                 this.tempTitle='';
+                /*let sendObj = {
+                    title:this.tempTitle,
+                    key:this.columnCount,
+                    colName:lastColName
+                }*/
                 this.propName.push(newObj)
                 axios.post(nameURL, newObj)
                 this.formKey=Date.now();
@@ -150,11 +161,13 @@ export default {
         submitForm(){
             //var newTemp = JSON.parse(JSON.stringify(this.tempData.data));
             let newTemp = {}
+            newTemp['id'] = this.fieldData.length+1; //给单条form数据加上id 字段
             var notNull = true;
             for(let data of this.tempData.data){
                 newTemp[data.title] = data.value
                 if(data.value=='') notNull=false;
             }
+            
             if(notNull){
                 this.fieldData.push(newTemp);
                 this.tableKey = Date.now();
@@ -162,7 +175,7 @@ export default {
             }
             
             
-            for( var i = 0; i<this.tempData.data.length; i++)
+            for(var i = 0; i<this.tempData.data.length; i++)
             {
                 this.tempData.data[i].value='';
             }
@@ -182,7 +195,8 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-            axios.delete(baseURL+'/'+this.fieldData[index].id);
+            let Obj = {ColNum:this.fieldData[index].id};
+            axios.post(baseURL+"Delete",Obj);
             this.tableKey=Date.now();
             this.fieldData.splice(index,1);
             
@@ -203,6 +217,7 @@ export default {
         confirmCol(){
             for(let data of this.fieldData)
             {
+                if(this.deleteTitle!="Title")
                 delete data[this.deleteTitle];
             }
             var cnt = 0;
@@ -213,26 +228,34 @@ export default {
                 {
                     this.propName.splice(cnt,1);
                     this.tempData.data.splice(cnt,1);
+                    axios.post(nameURL+"/delete", {title:this.deleteTitle});
                 }
                 cnt++;
             }
             this.deleteEnable = false;
             this.tableKey = Date.now();
+            
         },
-        editConfirm(){
-            this.edittable = false;
-            var Obj = [];
-            this.tableKey=Date.now();
+        sendOptions(){
+            let Obj = [];
             for(let data of this.fieldData){
+                console.log(data)
                 var newObj={};
-                axios.put(baseURL+'/'+data.id,data).catch(e=>console.log(e));
+                //axios.put(baseURL+'/'+data.id,data).catch(e=>console.log(e));
                 newObj.value=data["Title"];
                 newObj.label=data["Title"];
                 
                 Obj.push(newObj);
                 
             }
+            console.log(this.tableProp.Id)
             this.$emit("dataConfirmed",Obj, this.tableProp.Id);
+        },
+        editConfirm(){
+            this.edittable = false;
+            this.tableKey=Date.now();
+            axios.post(baseURL+"/allData", this.fieldData);
+            this.sendOptions();
         },
         cancelOption(){
             
