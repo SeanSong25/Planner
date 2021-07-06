@@ -6,8 +6,6 @@ router.get('/messages',(req,res)=>{
     res.send("this is a demo message")
 })
 
-
-
 function getConnection(){
     return mysql.createPool({
         connectionLimit: 10,

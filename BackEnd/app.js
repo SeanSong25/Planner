@@ -13,7 +13,8 @@ app.use(express.static('./htmls'))
 
 const router = require('./routes/user.js')
 app.use(router)
-
+const treeRouter = require('./routes/tree.js')
+app.use(treeRouter)
 app.get("/", (req,res)=>{
     console.log("Responding to root route")
     res.send("Hello from root")
