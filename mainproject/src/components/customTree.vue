@@ -51,27 +51,69 @@
 
 <script>
   
-
+const treeDataURL = "http://192.168.124.85:3003/tree/Data";
+//const treeDataURL = "http://192.168.2.12:3003/tree/Data";
+import axios from "axios";
   export default {
     name:"updateTree",
+    props:{
+    },
     data() {
       return {
         queryString:"",
         notSure:false,
         showInput:false,
         onSubmit:false,
-        data :[{
-        id: 1,
-        label: '我的计划',
-        isLeaf:false,
-        children:[],
-
-      }],
+        treeData:[],
+        lastId:-1,
+        data:[],
         tempData:{},
         tempTitle:'',
       }
     },
-
+    async created(){
+      let res = await axios.get(treeDataURL)
+      this.treeData = res.data;
+      //将数据库中的字段对应到组件
+      let len = Object.keys(this.treeData).length;
+      this.lastId = len;
+      let root = {
+        Pid: 0,
+        id: 1,
+        label: '我的计划',
+        isLeaf: false,
+        children:[]
+      }
+      
+      for(let i = 1; i<len; i++){
+        
+        let temp = this.treeData[i]; 
+        let Node = {};
+        if(temp.Pid == '1'){
+          Node.isLeaf = false;
+          Node.children = [];
+          Node.Pid = temp.Pid;
+          Node.id = temp.id;
+          Node.label = temp.Name;
+          root.children.push(Node);
+        }//fixed表单添加
+        else{
+          Node.isLeaf = true;
+          Node.children = [];
+          Node.Pid = temp.Pid;
+          Node.id = temp.id;
+          Node.label = temp.Name;
+          for(let item of root.children){
+            if(item.id == temp.Pid){
+              item.children.push(Node);
+              
+              break;//update表单添加
+            }
+          }
+        }
+      }
+      this.data.push(root);
+    },
     methods: {
       filterNode(value,data){
         if (!value) return true;
@@ -94,6 +136,15 @@
           const parent = node.parent;
           const children = parent.data.children;
           const index = children.findIndex(d => d.id === data.id);
+          console.log(children)
+          
+          let Obj = [];//array of children indexes to be deleted
+          if(children[index].children.length>0){
+            for(let item of children[index].children){
+              Obj.push(item.id);
+            }
+          }
+          axios.post(treeDataURL+"/delete",{id:children[index].id, children_Id: Obj});
           children.splice(index, 1);
           if(parent.data.id!=1)
           {this.$emit("childDeleted", index);}
@@ -102,7 +153,8 @@
             type: 'success',
             message: 'Delete completed'
           });
-        }).catch(() => {
+        }).catch((err) => {
+          console.log(err);
           this.$message({
             type: 'info',
             message: 'Delete canceled'
@@ -134,13 +186,16 @@
                 {var tempLabel = this.tempTitle;
                 let Obj;
                 if(this.tempData.id!=1){
-                  let newChild = { id: this.tempData.id+this.tempData.children.length+1, label: tempLabel, children: [], isLeaf:true };
+                  let newChild = { id: ++this.lastId, Pid:this.tempData.id,
+                  label: tempLabel, children: [], isLeaf:true };
                   this.tempData.children.push(newChild);
                   Obj = {...newChild}
+                  axios.post(treeDataURL, Obj)
                 }else{
-                  let Child={id:'1'+this.tempData.children.length+1, label:tempLabel,children:[]};
+                  let Child={id:++this.lastId, Pid: 1,label:tempLabel,children:[]};
                   this.tempData.children.push(Child);
                   Obj = {...Child}
+                  axios.post(treeDataURL, Obj)
                 }
                 
                 this.showInput = false;

@@ -2,7 +2,7 @@
     <el-container style="height: 1000px; border: 1px solid #eee;">
         <el-aside width="250px" style="background-color: rgb(238, 241, 246); margin-right:20px">
             <updateTree @isPlan="planAdd" @added="addTable" @node-is-clicked="showNodeTable" 
-            @childDeleted="deleteChild" @planDeleted="deletePlan" ></updateTree>
+            @childDeleted="deleteChild" @planDeleted="deletePlan" :treeData="treeData" ></updateTree>
         </el-aside>
         <el-main style="background-color: rgb(238,241,240);">
             <updateFormTable v-for="tableData in tableInfo" :key="tableData.Id" :tableProp="tableData" 
@@ -18,7 +18,9 @@
 import updateTree from "./customTree.vue";
 import updateFormTable from "./updateFormTable.vue";
 import FixedFormTable from "./fixedFormTable.vue";
-
+import axios from "axios";
+const treeDataURL = "http://192.168.124.85:3003/tree/Data";
+//const treeDataURL = "http://192.168.2.12:3003/tree/Data";
 export default {
     name:"commonPage",
     components:{updateTree, updateFormTable, FixedFormTable},
@@ -28,32 +30,33 @@ export default {
             tableInfo:[],
             planTableInfo:[],
             Id:'',
-            refreshId:'',
             isPlan:false,
             subOptArray:[],
             Options:[],
-            notPlan:false,
+            treeData:[],
         }
     },
     watch:{
 
     },
     created(){
+        let res = axios.get(treeDataURL)
+        this.treeData = res.data;
 
     },
     methods:{
         addTable(Obj){
             this.numTable+=1;
-            var title = JSON.parse(JSON.stringify(Obj.label));
-            var id = JSON.parse(JSON.stringify(Obj.id));
+            let title = JSON.parse(JSON.stringify(Obj.label));
+            let id = JSON.parse(JSON.stringify(Obj.id));
             this.Id=id;
-            var newObj={Title:title, Id:id};
+            let newObj={Title:title, Id:id};
             if(!this.isPlan)
             {
-                this.tableInfo.push(newObj);
+                this.tableInfo.push(newObj); //非fixed表格添加
             }
             else{
-                this.planTableInfo.push(newObj);
+                this.planTableInfo.push(newObj);//fixed表格添加
                 this.isPlan = false;
             }
             
