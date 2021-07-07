@@ -1,2 +1,3 @@
 # Planner
-A customizable planner app to make plans1!
+A customizable planner app to make plans!!
+Coming soon...
