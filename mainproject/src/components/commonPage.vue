@@ -21,6 +21,10 @@ import FixedFormTable from "./fixedFormTable.vue";
 import axios from "axios";
 const treeDataURL = "http://192.168.124.85:3003/tree/Data";
 //const treeDataURL = "http://192.168.2.12:3003/tree/Data";
+const formtableCreateURL = "http://192.168.124.85:3003/formtableCreate";
+//const formtableCreateURL = "http://192.168.2.12:3003/formtableCreate";
+const fixedtableCreateURL = "http://192.168.124.85:3003/fixedtableCreate";
+//const fixedtableCreateURL = "http://192.168.2.12:3003/fixedtableCreate";
 export default {
     name:"commonPage",
     components:{updateTree, updateFormTable, FixedFormTable},
@@ -39,10 +43,17 @@ export default {
     watch:{
 
     },
-    created(){
-        let res = axios.get(treeDataURL)
+    async created(){
+        let res = await axios.get(treeDataURL)
         this.treeData = res.data;
 
+        for(let item of this.treeData){
+            if(item.Pid!=0&&item.Pid!=1){
+                this.tableInfo.push({Title: item.Name, Id:item.id})
+            }else{
+                this.planTableInfo.push({Title: item.Name, Id: item.id})
+            }
+        }
     },
     methods:{
         addTable(Obj){
@@ -54,10 +65,12 @@ export default {
             if(!this.isPlan)
             {
                 this.tableInfo.push(newObj); //非fixed表格添加
+                axios.post(formtableCreateURL,newObj);
             }
             else{
                 this.planTableInfo.push(newObj);//fixed表格添加
                 this.isPlan = false;
+                axios.post(fixedtableCreateURL, newObj);
             }
             
         },

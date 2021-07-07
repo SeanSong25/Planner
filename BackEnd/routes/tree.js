@@ -13,13 +13,52 @@ function getConnection(){
         charset: 'UTF8_GENERAL_CI'
     })
 }
+//the refresh function refreshes all the keys in consecutive order starting from 1, and for all 
+//the children of parent key, it loops through and find them and set their Pid to the updated value
+/*router.get('/refresh',(req,res)=>{
+    const connection = getConnection();
+    var sql = "SELECT * FROM element_keys";
+    var updateSql = "UPDATE element_keys SET `id` = ? WHERE (`id` = ?)";
+    var updateChildSql = "UPDATE element_keys SET `Pid`= ? WHERE (`id` = ?)";
+    connection.query(sql,(err,result,field)=>{
+        let len = result.length;
+        let resultSet = [...result];
+        for(let i = 1; i<=len; i++){
+            let lastId = result[i-1].id;
+            console.log("LastId", lastId);
+            console.log("I: ", i);
+            connection.query(updateSql,[i,lastId],(err,result,field)=>{
+                if(err){
+                    console.log("failed", err);
+                    res.sendStatus(500);
+                    return;
+                }
+                for(let item of resultSet){
+                    console.log("child LastId: ", lastId);
+                    console.log("I: ", i);
+                    if(item.Pid == lastId){
+                        console.log("found child LastId: ", lastId);
+                        console.log("I: ", i);
+                        connection.query(updateChildSql,[i, item.id],(err,result,field)=>{
+                            if(err){
+                                console.log(err);
+                            }
+                        })
+                    }
+                }
+                
+            })
+        }
+    })
+    res.end();
+})*/
 
 router.get('/tree/Data', (req,res)=>{
     const connection = getConnection();
     var sql = "SELECT * FROM element_keys";
     connection.query(sql, (err,result,fields)=>{
         if(err){
-            console.log("Insert Failed", err);
+            console.log("Select failed", err);
             res.sendStatus(500);
             return;
         }

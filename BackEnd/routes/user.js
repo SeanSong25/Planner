@@ -24,7 +24,7 @@ router.get('/formTable/1/Data', (req,res)=>{
     let sql = 'SELECT * FROM demo'
     connection.query(sql,(err,rows,fields)=>{
         if(err){
-            console.error("Failed to query "+res.params.id)
+            console.error("Failed to query "+err)
             res.sendStatus(500)
             return
         }

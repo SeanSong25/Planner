@@ -53,6 +53,8 @@
   
 const treeDataURL = "http://192.168.124.85:3003/tree/Data";
 //const treeDataURL = "http://192.168.2.12:3003/tree/Data";
+//const refreshURL = "http://192.168.124.85:3003/refresh";
+//const refreshURL = "http://192.168.2.12:3003/refresh";
 import axios from "axios";
   export default {
     name:"updateTree",
@@ -71,12 +73,22 @@ import axios from "axios";
         tempTitle:'',
       }
     },
+    async beforeCreate(){
+      //await axios.get(refreshURL);
+    },
     async created(){
       let res = await axios.get(treeDataURL)
       this.treeData = res.data;
       //将数据库中的字段对应到组件
       let len = Object.keys(this.treeData).length;
-      this.lastId = len;
+      let max = 0;
+      for(let i = 0; i<len; i++){
+        if(this.treeData[i].id>max)
+        {
+          max = this.treeData[i].id;
+        }
+      }
+      this.lastId = max;
       let root = {
         Pid: 0,
         id: 1,
@@ -137,14 +149,16 @@ import axios from "axios";
           const children = parent.data.children;
           const index = children.findIndex(d => d.id === data.id);
           console.log(children)
-          
+          let names = [];
           let Obj = [];//array of children indexes to be deleted
           if(children[index].children.length>0){
             for(let item of children[index].children){
               Obj.push(item.id);
+              names.push(item.label);
             }
           }
-          axios.post(treeDataURL+"/delete",{id:children[index].id, children_Id: Obj});
+          axios.post(treeDataURL+"/delete",{id:children[index].id, children_Id: Obj, children_names:names,
+          fixedName:children[index].label});
           children.splice(index, 1);
           if(parent.data.id!=1)
           {this.$emit("childDeleted", index);}
