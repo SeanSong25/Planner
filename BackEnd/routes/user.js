@@ -13,6 +13,7 @@ function getConnection(){
         user: "root",
         password: "123456",
         database: 'PlannerDB',
+        charset:'UTF8_GENERAL_CI',
         multipleStatements: true
     })
 }

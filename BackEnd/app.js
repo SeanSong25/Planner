@@ -15,6 +15,9 @@ const router = require('./routes/user.js')
 app.use(router)
 const treeRouter = require('./routes/tree.js')
 app.use(treeRouter)
+const tableRouter = require('./routes/table.js')
+app.use(tableRouter)
+
 app.get("/", (req,res)=>{
     console.log("Responding to root route")
     res.send("Hello from root")

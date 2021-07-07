@@ -9,7 +9,8 @@ function getConnection(){
         user: "root",
         password: "123456",
         database: 'PlannerDB',
-        multipleStatements: true
+        multipleStatements: true,
+        charset: 'UTF8_GENERAL_CI'
     })
 }
 
@@ -18,11 +19,15 @@ router.get('/tree/Data', (req,res)=>{
     var sql = "SELECT * FROM element_keys";
     connection.query(sql, (err,result,fields)=>{
         if(err){
-            console.log("Insert Failed");
+            console.log("Insert Failed", err);
             res.sendStatus(500);
             return;
         }
-        let data = {...result};
+        let data = [];
+        for(let item of result){
+            data.push(item)
+        }
+        
         res.json(data);
     })
 })
@@ -46,16 +51,24 @@ router.post('/tree/Data', (req,res)=>{
 
 router.post('/tree/Data/delete',(req,res)=>{
     const connection = getConnection();
+    const tableSql = "DROP TABLE ";
     var sql = "DELETE FROM element_keys WHERE(`id` = '?')";
     console.log("id",req.body.id);
     let obj = req.body.children_Id;
+    let names = req.body.children_names;
+    connection.query(tableSql + '`'+req.body.fixedName+'`',(err,result,fields)=>{
+        if(err){
+            console.log("drop table failed", err);
+            res.sendStatus(500);
+            return;
+        }
+    })
     connection.query(sql,[req.body.id],(err,result,fields)=>{
         if(err){
             console.log("delete failed: ", err);
             res.sendStatus(500);
             return;
         }
-        console.log(sql);
     })
 
     for(let item of obj){
@@ -66,6 +79,16 @@ router.post('/tree/Data/delete',(req,res)=>{
             return;
             }
 
+        })
+    }
+
+    for(let item of names){
+        connection.query(tableSql+'`'+item+'`',(err,result,fields)=>{
+            if(err){
+                console.log("drop children failed: ", err);
+                res.sendStatus(500);
+                return;
+            }
         })
     }
     res.end();
