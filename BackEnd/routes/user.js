@@ -18,10 +18,10 @@ function getConnection(){
     })
 }
 
-router.get('/formTable/1/Data', (req,res)=>{
-    
+router.get('/formTable/Data/:name', (req,res)=>{
+    const tableName = '`'+req.params.name+'`';
     const connection = getConnection();
-    let sql = 'SELECT * FROM demo'
+    let sql = 'SELECT * FROM '+tableName;
     connection.query(sql,(err,rows,fields)=>{
         if(err){
             console.error("Failed to query "+err)
@@ -41,15 +41,16 @@ router.get('/formTable/1/Data', (req,res)=>{
     
 })
 
-router.post('/formTable/1/Data', (req,res)=>{
+router.post('/formTable/Data', (req,res)=>{
     const connection = getConnection();
+    const tableName = '`'+req.body.name+'`';
     //INSERT INTO `PlannerDB`.`demo` (`id`, `Title`, `Warm-up`) VALUES ('2', '2', '2');
     //let sql = "INSERT INTO demo (id,Title,Warm-up,Main-Activity) VALUES (`2`,`2`,`2`,`2`)"
     let ColString = "(`id`,`Title`";
     if(Object.keys(req.body).length == 2){ColString = ColString+')'}
     else{
         for(let item in req.body){
-            if(item!='id'&&item!='Title'){
+            if(item!='id'&&item!='Title'&&item!='name'){
                 ColString+=",`"+item+"`";
             }
         }
@@ -58,9 +59,10 @@ router.post('/formTable/1/Data', (req,res)=>{
     
     let valName = [];
     for(let item in req.body){
+        if(item!='name')
         valName.push(req.body[item])
     }
-    let sql = "INSERT INTO demo "+ColString+" VALUES (?)";
+    let sql = "INSERT INTO "+tableName+" "+ColString+" VALUES (?)";
     connection.query(sql,[valName],(err,result,end)=>{
         if(err){console.log(err);
         res.sendStatus(500);
@@ -72,9 +74,10 @@ router.post('/formTable/1/Data', (req,res)=>{
     
 })
 
-router.post('/formTable/1/DataDelete',(req,res)=>{
+router.post('/formTable/DataDelete',(req,res)=>{
     const connection = getConnection();
-    let sql = "DELETE FROM demo WHERE (`id` = (?)) ";
+    const tableName = '`'+req.body.name+'`';
+    let sql = "DELETE FROM "+tableName+" WHERE (`id` = (?)) ";
     //DELETE FROM `PlannerDB`.`demo` WHERE (`id` = '2');
     connection.query(sql,[req.body.ColNum],(err,result,fields)=>{
         if(err) {console.log(err);
@@ -88,9 +91,10 @@ router.post('/formTable/1/DataDelete',(req,res)=>{
 
 })
 
-router.post('/formTable/1/Data/allData',(req,res)=>{
+router.post('/formTable/Data/allData',(req,res)=>{
     const connection = getConnection();
-    let sql = "SELECT * FROM demo";
+    const tableName = '`'+req.body.name+'`';
+    let sql = "SELECT * FROM "+tableName;
     //UPDATE `PlannerDB`.`demo` SET `Warm-up` = 'hello', `Main-Activity` = 'hi' WHERE (`id` = '2');
     //UPDATE `PlannerDB`.`demo` SET `Main-Activity` = 'hey' WHERE (`id` = '1');
 
@@ -103,10 +107,10 @@ router.post('/formTable/1/Data/allData',(req,res)=>{
         
         for(let i = 0;  i<arrayLength; i++){
             for(let item in result[i]){
-                if(result[i][item]!==req.body[i][item]){
+                if(result[i][item]!==req.body.Data[i][item]&&item!='name'){
                     let rowString = '`'+item+'`';
-                    let exeSql = "UPDATE `PlannerDB`.`demo` SET "+ rowString+ "= ?"+" WHERE (`id` = '?')";
-                    connection.query(exeSql,[req.body[i][item],i+1], 
+                    let exeSql = "UPDATE "+tableName+" SET "+ rowString+ "= ?"+" WHERE (`id` = '?')";
+                    connection.query(exeSql,[req.body.Data[i][item],i+1], 
                     (err,result,fields)=>{
                         console.log(exeSql);
                         if(err){
@@ -124,13 +128,14 @@ router.post('/formTable/1/Data/allData',(req,res)=>{
 })
 
 
-router.get('/formTable/1/nameData',(req,res)=>{
+router.get('/formTable/nameData/:name',(req,res)=>{
 
     const connection = getConnection();
-    let sql = 'SELECT * from demo'
+    const tableName = '`'+req.params.name+'`';
+    let sql = 'SELECT * from '+tableName;
     connection.query(sql,(err,result,fields)=>{
         if(err){
-            console.error("Failed to query "+res.params.id)
+            console.error("Failed to query ")
             res.sendStatus(500)
             return
         }
@@ -151,11 +156,11 @@ router.get('/formTable/1/nameData',(req,res)=>{
     })
 })
 
-router.post('/formTable/1/nameData',(req,res)=>{
+router.post('/formTable/nameData',(req,res)=>{
     
     const connection = getConnection();
-    
-    let sql = "ALTER TABLE demo ADD COLUMN `" + req.body.title + "` VARCHAR(64) NULL";
+    const tableName = '`'+req.body.name+'`';
+    let sql = "ALTER TABLE "+tableName+" ADD COLUMN `" + req.body.title + "` VARCHAR(64) NULL";
     console.log(sql);
     connection.query(sql,(err,rows,fields)=>{
         if(err){
@@ -168,9 +173,10 @@ router.post('/formTable/1/nameData',(req,res)=>{
     res.end();
 })
 
-router.post('/formTable/1/nameData/delete',(req,res)=>{
+router.post('/formTable/nameData/delete',(req,res)=>{
     const connection = getConnection();
-    let sql = "ALTER TABLE `demo` DROP ";
+    const tableName = '`'+req.body.name+'`';
+    let sql = "ALTER TABLE "+tableName+" DROP ";
     let colName = "`"+req.body.title+"`";
     sql = sql+colName;
     connection.query(sql,(err,result,fields)=>{
@@ -184,10 +190,10 @@ router.post('/formTable/1/nameData/delete',(req,res)=>{
     res.end();
 })
 
-router.get('/formTable/1/tempData',(req,res)=>{
-
+router.get('/formTable/tempData/:name',(req,res)=>{
+    const tableName = '`'+req.params.name+'`';
     const connection = getConnection();
-    let sql = "SELECT * from demo";
+    let sql = "SELECT * from "+tableName;
     connection.query(sql,(err,result,fields)=>{
         const data = [];
         let i = 1

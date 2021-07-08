@@ -54,6 +54,8 @@ export default {
                 this.planTableInfo.push({Title: item.Name, Id: item.id})
             }
         }
+        console.log("tableInfo", this.tableInfo);
+        console.log("planTableInfo", this.planTableInfo)
     },
     methods:{
         addTable(Obj){
@@ -125,15 +127,8 @@ export default {
                 item.children=[]
             }
             }   
-            
-            /*if(Obj.length>0){
-                newObj.value = Obj.value;
-                newObj.label = Obj.value;
-                newObj.Id = Id;
-            }*/
             var a = 0;
-            //updated suboptarray when update is called upon
-            if((a = this.subOptArray.findIndex(d=>d.Id===Obj[0].Id)) !=-1){
+            if(Obj.length>0&&(a = this.subOptArray.findIndex(d=>d.Id===Obj[0].Id)) !=-1){
                 this.subOptArray[a]={...Obj};
             }
             else

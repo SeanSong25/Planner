@@ -23,6 +23,12 @@ app.get("/", (req,res)=>{
     res.send("Hello from root")
 })
 
+app.post("/test/1",(req,res)=>{
+    //const id = req.params.id;
+    //console.log(id);
+    console.log("posted")
+})
+
 const PORT = process.env.PORT || 3003
 
 app.listen(PORT, ()=>{

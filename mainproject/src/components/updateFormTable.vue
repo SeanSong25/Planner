@@ -74,13 +74,13 @@
 
 <script>
 import axios from "axios";
-const baseURL = "http://192.168.124.85:3003/formTable/1/Data"
-//const baseURL = "http://192.168.2.12:3003/formTable/1/Data"
-const nameURL = "http://192.168.124.85:3003/formTable/1/nameData"//
-//const nameURL = "http://192.168.2.12:3003/formTable/1/nameData"
-const tempURL = "http://192.168.124.85:3003/formTable/1/tempData"
+const baseURL = "http://192.168.124.85:3003/formTable/Data"
+//const baseURL = "http://192.168.2.12:3003/formTable/Data"
+const nameURL = "http://192.168.124.85:3003/formTable/nameData"//
+//const nameURL = "http://192.168.2.12:3003/formTable/nameData"
+const tempURL = "http://192.168.124.85:3003/formTable/tempData"
 
-//const tempURL = "http://192.168.2.12:3003/formTable/1/tempData"
+//const tempURL = "http://192.168.2.12:3003/formTable/tempData"
 export default {
     name:"updateFormTable",
     
@@ -105,7 +105,6 @@ export default {
             },
             tempTitle:'',
             addFlag:true,
-            columnCount:0,
             tableTitle:"Table",
             titleFlag : true,
             edittable :false,
@@ -116,15 +115,17 @@ export default {
     },
     async created(){
         
-        const res = await axios.get(baseURL)
+        const res = await axios.get(baseURL+"/"+this.tableProp.Title);
         console.log(res.data)
         this.fieldData=res.data;
-        const resp = await axios.get(nameURL)
+        const resp = await axios.get(nameURL+"/"+this.tableProp.Title);
         console.log(resp.data)
         this.propName = resp.data;
-        const respo = await axios.get(tempURL)
+        const respo = await axios.get(tempURL+"/"+this.tableProp.Title);
         this.tempData.data=respo.data;
         this.sendOptions();
+        console.log("tableProp:", this.tableProp);
+        
     },
     methods:{
         onAdd(){
@@ -135,15 +136,16 @@ export default {
                 if(this.tempTitle!=''){
                 var newObj = {
                     title:this.tempTitle,
-                    key:this.columnCount,
+                    key:this.propName.length+1,
+                    name:this.tableProp.Title
                 }
                 var tempObj ={
                     title:this.tempTitle,
-                    key:this.columnCount,
-                    value:''
+                    key:this.propName.length+1,
+                    value:'',
+                    
                 }
                 //let lastColName = this.propName[this.propName.length-1].title;
-                this.columnCount++;
                 this.tempTitle='';
                 /*let sendObj = {
                     title:this.tempTitle,
@@ -167,6 +169,7 @@ export default {
                 newTemp[data.title] = data.value
                 if(data.value=='') notNull=false;
             }
+            newTemp.name=this.tableProp.Title;
             
             if(notNull){
                 this.fieldData.push(newTemp);
@@ -195,7 +198,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-            let Obj = {ColNum:this.fieldData[index].id};
+            let Obj = {ColNum:this.fieldData[index].id,name:this.tableProp.Title};
             axios.post(baseURL+"Delete",Obj);
             this.tableKey=Date.now();
             this.fieldData.splice(index,1);
@@ -228,7 +231,7 @@ export default {
                 {
                     this.propName.splice(cnt,1);
                     this.tempData.data.splice(cnt,1);
-                    axios.post(nameURL+"/delete", {title:this.deleteTitle});
+                    axios.post(nameURL+"/delete", {title:this.deleteTitle,name:this.tableProp.Title});
                 }
                 cnt++;
             }
@@ -248,13 +251,14 @@ export default {
                 Obj.push(newObj);
                 
             }
-            console.log(this.tableProp.Id)
+            
             this.$emit("dataConfirmed",Obj, this.tableProp.Id);
         },
         editConfirm(){
             this.edittable = false;
             this.tableKey=Date.now();
-            axios.post(baseURL+"/allData", this.fieldData);
+            let Obj = {Data:[...this.fieldData],name:this.tableProp.Title};
+            axios.post(baseURL+"/allData", Obj);
             this.sendOptions();
         },
         cancelOption(){
