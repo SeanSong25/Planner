@@ -116,15 +116,15 @@ export default {
     async created(){
         
         const res = await axios.get(baseURL+"/"+this.tableProp.Title);
-        console.log(res.data)
+        
         this.fieldData=res.data;
         const resp = await axios.get(nameURL+"/"+this.tableProp.Title);
-        console.log(resp.data)
+        
         this.propName = resp.data;
         const respo = await axios.get(tempURL+"/"+this.tableProp.Title);
         this.tempData.data=respo.data;
         this.sendOptions();
-        console.log("tableProp:", this.tableProp);
+        
         
     },
     methods:{
@@ -242,7 +242,7 @@ export default {
         sendOptions(){
             let Obj = [];
             for(let data of this.fieldData){
-                console.log(data)
+                
                 var newObj={};
                 //axios.put(baseURL+'/'+data.id,data).catch(e=>console.log(e));
                 newObj.value=data["Title"];

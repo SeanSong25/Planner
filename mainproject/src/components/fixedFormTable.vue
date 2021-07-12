@@ -12,8 +12,9 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="options"
-                 v-model="scope.row.Monday">
+                 :options="newoptions"
+                 v-model="scope.row.Monday"
+                 >
                 </el-cascader>
             </template> 
         </el-table-column>
@@ -21,7 +22,7 @@
              <template slot-scope="scope" >
                 <el-cascader :disabled="disabler"
                 :key="cascaderKey"
-                 :options="options"
+                 :options="newoptions"
                  v-model="scope.row.Tuesday">
                 </el-cascader>
             </template>
@@ -90,6 +91,11 @@
 </template>
 
 <script>
+import axios from "axios"
+const unfilledURL = "http://192.168.124.85:3003/fixedFormTable"
+//const unfilledURL = "http://192.168.2.12:3003/fixedFormTable"
+const toFillURL = "http://192.168.124.85:3003/fixedFormTable/filler"
+//const toFillURL = "http://192.168.2.12:3003/fixedFormTable/filler"
 export default {
     
     props:{
@@ -118,18 +124,25 @@ export default {
                 Sunday: ''
             },
             options:[],
+            newoptions:[{}],
             multipleSelection:[],
         }
     },
-    created(){
+    async created(){
+        
+        let res = await axios.get(unfilledURL+'/'+this.Prop.Id);
+        this.newoptions = res.data
+        console.log("newoptions:",this.newoptions)
+        let postRes = await axios.post(toFillURL,res.data);
+        console.log(postRes);
+        this.newoptions = [...postRes.data];
         this.cascaderKey = Date.now();
-        console.log("ss", this.SelectOptions)
     },
     watch:{
         SelectOptions(){
             this.cascaderKey = Date.now();
             this.options = this.SelectOptions;
-            console.log("select options", this.SelectOptions)
+            
         }
     },
     methods:{
@@ -191,6 +204,7 @@ export default {
 
         checked(){
             this.disabler = true;
+            
         },
         toEdit(){
             this.disabler = false;

@@ -17,6 +17,9 @@ const treeRouter = require('./routes/tree.js')
 app.use(treeRouter)
 const tableRouter = require('./routes/table.js')
 app.use(tableRouter)
+const fixedTableRouter = require('./routes/fixed.js')
+app.use(fixedTableRouter)
+
 
 app.get("/", (req,res)=>{
     console.log("Responding to root route")

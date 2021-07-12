@@ -50,12 +50,11 @@ export default {
         for(let item of this.treeData){
             if(item.Pid!=0&&item.Pid!=1){
                 this.tableInfo.push({Title: item.Name, Id:item.id})
-            }else{
+            }else if(item.Pid!=0){
                 this.planTableInfo.push({Title: item.Name, Id: item.id})
             }
         }
-        console.log("tableInfo", this.tableInfo);
-        console.log("planTableInfo", this.planTableInfo)
+
     },
     methods:{
         addTable(Obj){
@@ -90,7 +89,7 @@ export default {
                 }
                 if(this.subOptArray.length>0){
                     tempObj.children=this.subOptArray;
-                    [this.subOptArray.findIndex((a)=>a.Id===item.id)].value}
+                    }
                 
                 newObj.push(tempObj);
                 
@@ -124,12 +123,12 @@ export default {
             if(Obj.length>0){
                 for(let item of Obj){
                 item.id = Id;
-                item.children=[]
+                item.children=undefined
             }
             }   
             var a = 0;
             if(Obj.length>0&&(a = this.subOptArray.findIndex(d=>d.Id===Obj[0].Id)) !=-1){
-                this.subOptArray[a]={...Obj};
+                this.subOptArray[a]=[...Obj];
             }
             else
                 this.subOptArray.push(Obj);
