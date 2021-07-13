@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const mysql = require('mysql')
 
-function getConnection(){
-    return mysql.createPool({
-        connectionLimit: 10,
+var getConnection =
+     mysql.createPool({
+        connectionLimit: 50,
         host:"localhost",
         user: "root",
         password: "123456",
@@ -12,7 +12,7 @@ function getConnection(){
         multipleStatements: true,
         charset: 'UTF8_GENERAL_CI'
     })
-}
+
 //the refresh function refreshes all the keys in consecutive order starting from 1, and for all 
 //the children of parent key, it loops through and find them and set their Pid to the updated value
 /*router.get('/refresh',(req,res)=>{
@@ -54,7 +54,7 @@ function getConnection(){
 })*/
 
 router.get('/tree/Data', (req,res)=>{
-    const connection = getConnection();
+    const connection = getConnection;
     var sql = "SELECT * FROM element_keys";
     connection.query(sql, (err,result,fields)=>{
         if(err){
@@ -77,7 +77,7 @@ router.post('/tree/Data', (req,res)=>{
     let id = req.body.id;
     var sql = "INSERT INTO element_keys (`Pid`, `id`, `Name`)"+
     "VALUES(?,?,?)";
-    const connection = getConnection();
+    const connection = getConnection;
     connection.query(sql, [Pid,id,Name],(err,result,fields)=>{
         if(err){
             console.log("Insert Failed: ",err);
@@ -89,7 +89,7 @@ router.post('/tree/Data', (req,res)=>{
 })
 
 router.post('/tree/Data/delete',(req,res)=>{
-    const connection = getConnection();
+    const connection = getConnection;
     const tableSql = "DROP TABLE ";
     var sql = "DELETE FROM element_keys WHERE(`id` = '?')";
     console.log("id",req.body.id);

@@ -123,9 +123,6 @@ export default {
         this.propName = resp.data;
         const respo = await axios.get(tempURL+"/"+this.tableProp.Title);
         this.tempData.data=respo.data;
-        this.sendOptions();
-        
-        
     },
     methods:{
         onAdd(){
@@ -145,13 +142,8 @@ export default {
                     value:'',
                     
                 }
-                //let lastColName = this.propName[this.propName.length-1].title;
                 this.tempTitle='';
-                /*let sendObj = {
-                    title:this.tempTitle,
-                    key:this.columnCount,
-                    colName:lastColName
-                }*/
+               
                 this.propName.push(newObj)
                 axios.post(nameURL, newObj)
                 this.formKey=Date.now();
@@ -237,29 +229,16 @@ export default {
             }
             this.deleteEnable = false;
             this.tableKey = Date.now();
-            
         },
-        sendOptions(){
-            let Obj = [];
-            for(let data of this.fieldData){
-                
-                var newObj={};
-                //axios.put(baseURL+'/'+data.id,data).catch(e=>console.log(e));
-                newObj.value=data["Title"];
-                newObj.label=data["Title"];
-                
-                Obj.push(newObj);
-                
-            }
-            
-            this.$emit("dataConfirmed",Obj, this.tableProp.Id);
-        },
+        
+        
         editConfirm(){
             this.edittable = false;
             this.tableKey=Date.now();
             let Obj = {Data:[...this.fieldData],name:this.tableProp.Title};
             axios.post(baseURL+"/allData", Obj);
-            this.sendOptions();
+            //this.$emit("updatedRows",this.tableProp.Id)
+            
         },
         cancelOption(){
             

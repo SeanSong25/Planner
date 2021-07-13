@@ -98,7 +98,6 @@ import axios from "axios";
       }
       
       for(let i = 1; i<len; i++){
-        
         let temp = this.treeData[i]; 
         let Node = {};
         if(temp.Pid == '1'){
@@ -118,7 +117,6 @@ import axios from "axios";
           for(let item of root.children){
             if(item.id == temp.Pid){
               item.children.push(Node);
-              
               break;//update表单添加
             }
           }
@@ -139,7 +137,7 @@ import axios from "axios";
         }
       },
 
-      remove(node, data) {
+       remove(node, data) {
         this.$confirm('This will permanently delete the node. Continue?', 'Warning', {
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',
@@ -158,15 +156,16 @@ import axios from "axios";
             }
           }
           axios.post(treeDataURL+"/delete",{id:children[index].id, children_Id: Obj, children_names:names,
-          fixedName:children[index].label});
-          children.splice(index, 1);
-          if(parent.data.id!=1)
-          {this.$emit("childDeleted", index);}
-          else{this.$emit("planDeleted",index);}
-          this.$message({
-            type: 'success',
-            message: 'Delete completed'
-          });
+          fixedName:children[index].label}).then(()=>{
+              children.splice(index, 1);
+              if(parent.data.id!=1)
+              {this.$emit("childDeleted", index);}
+              else{this.$emit("planDeleted",index);}
+              this.$message({
+                type: 'success',
+                message: 'Delete completed'
+              });
+          })  
         }).catch((err) => {
           console.log(err);
           this.$message({
@@ -179,7 +178,16 @@ import axios from "axios";
 
 
       submitted(){
-          this.onSubmit = true;
+          if(this.tempTitle.length>0)
+          {
+            this.onSubmit = true;
+          }else{
+            this.$message({
+              type: 'warning',
+              message: 'Table name can not be empty'
+            })
+          }
+          
       },
       
       clickNode(data){
@@ -195,7 +203,7 @@ import axios from "axios";
       
     },
     watch:{
-        onSubmit(){
+        async onSubmit(){
             if(this.onSubmit)
                 {var tempLabel = this.tempTitle;
                 let Obj;
@@ -204,18 +212,20 @@ import axios from "axios";
                   label: tempLabel, children: [], isLeaf:true };
                   this.tempData.children.push(newChild);
                   Obj = {...newChild}
-                  axios.post(treeDataURL, Obj)
+                  await axios.post(treeDataURL, Obj)
+                  this.$emit("added",Obj);
                 }else{
                   let Child={id:++this.lastId, Pid: 1,label:tempLabel,children:[]};
                   this.tempData.children.push(Child);
                   Obj = {...Child}
-                  axios.post(treeDataURL, Obj)
+                  await axios.post(treeDataURL, Obj)
+                  this.$emit("added",Obj);
                 }
                 
                 this.showInput = false;
                 this.onSubmit = false;
                 this.tempTitle="";
-                this.$emit("added",Obj);
+                
                 
             }
         },

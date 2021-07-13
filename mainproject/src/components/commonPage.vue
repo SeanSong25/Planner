@@ -5,11 +5,15 @@
             @childDeleted="deleteChild" @planDeleted="deletePlan" :treeData="treeData" ></updateTree>
         </el-aside>
         <el-main style="background-color: rgb(238,241,240);">
-            <updateFormTable v-for="tableData in tableInfo" :key="tableData.Id" :tableProp="tableData" 
-            v-show="Id==tableData.Id" @dataConfirmed="pushNewData"></updateFormTable>
-            <FixedFormTable v-for="planData in planTableInfo" 
-            :key="planData.Id" :Prop="planData" 
-            v-show="Id==planData.Id" :SelectOptions="Options" ></FixedFormTable>
+            <template v-for="tableData in tableInfo">
+            <updateFormTable  :key="tableData.Id" :tableProp="tableData" 
+            v-if="Id==tableData.Id" ></updateFormTable>
+            </template>
+            <template v-for="planData in planTableInfo">
+                <FixedFormTable
+                :key="planData.Id" :Prop="planData" 
+                v-if="Id==planData.Id" ></FixedFormTable>
+            </template>
         </el-main>
     </el-container>
 </template>
@@ -35,9 +39,9 @@ export default {
             planTableInfo:[],
             Id:'',
             isPlan:false,
-            subOptArray:[],
-            Options:[],
             treeData:[],
+            updater : false,
+           
         }
     },
     watch:{
@@ -49,7 +53,7 @@ export default {
 
         for(let item of this.treeData){
             if(item.Pid!=0&&item.Pid!=1){
-                this.tableInfo.push({Title: item.Name, Id:item.id})
+                this.tableInfo.push({Title: item.Name, Id:item.id, Pid: item.Pid})
             }else if(item.Pid!=0){
                 this.planTableInfo.push({Title: item.Name, Id: item.id})
             }
@@ -57,54 +61,44 @@ export default {
 
     },
     methods:{
-        addTable(Obj){
+        async addTable(Obj){
             this.numTable+=1;
             let title = JSON.parse(JSON.stringify(Obj.label));
             let id = JSON.parse(JSON.stringify(Obj.id));
+            let Pid = Obj.Pid
             this.Id=id;
-            let newObj={Title:title, Id:id};
+            let newObj={Title:title, Id:id, Pid: Pid};
             if(!this.isPlan)
             {
-                this.tableInfo.push(newObj); //非fixed表格添加
-                axios.post(formtableCreateURL,newObj);
+                 //非fixed表格添加
+                axios.post(formtableCreateURL,newObj).then(
+                ()=>{
+                    this.tableInfo.push(newObj)
+                }       
+                ).catch((e)=>{
+                    console.log(e)
+                })
+                
             }
             else{
-                this.planTableInfo.push(newObj);//fixed表格添加
+                //fixed表格添加
                 this.isPlan = false;
-                axios.post(fixedtableCreateURL, newObj);
+                axios.post(fixedtableCreateURL, newObj).then(
+                    this.planTableInfo.push(newObj)
+                ).catch((e)=>{
+                    console.log(e)
+                });
             }
             
         },
         showNodeTable(data){
-            this.Id = data.id;
-            if(data.children.length>0){
-              var newObj=[];
-            for(let item of data.children){
-               
-                var tempObj = {
-                    value:item.label,
-                    label:item.label,
-                    key:item.id,
-                    children:[],
-                }
-                if(this.subOptArray.length>0){
-                    tempObj.children=this.subOptArray;
-                    }
-                
-                newObj.push(tempObj);
-                
-            }
-
-            this.Options=newObj;
-            
-            }
-            
+            this.Id = data.id;  
         },
         deleteChild(index){
             
             var ind = this.tableInfo.findIndex(d=>d.id===index);
             this.tableInfo.splice(ind,1);
-            this.Options.splice(this.Options.findIndex((a)=>a.key===index), 1);
+            //this.Options.splice(this.Options.findIndex((a)=>a.key===index), 1);
             this.numTable--;
 
         },
@@ -118,22 +112,6 @@ export default {
         planAdd(){
             this.isPlan = true;
         },
-        pushNewData(Obj, Id){
-           
-            if(Obj.length>0){
-                for(let item of Obj){
-                item.id = Id;
-                item.children=undefined
-            }
-            }   
-            var a = 0;
-            if(Obj.length>0&&(a = this.subOptArray.findIndex(d=>d.Id===Obj[0].Id)) !=-1){
-                this.subOptArray[a]=[...Obj];
-            }
-            else
-                this.subOptArray.push(Obj);
-            
-        }
         
     },
     computed:{

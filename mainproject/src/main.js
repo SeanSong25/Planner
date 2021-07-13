@@ -7,7 +7,7 @@ import VueAxios from 'vue-axios'
 Vue.use(ElementUI);
 Vue.use(VueAxios,axios)
 Vue.config.productionTip = false
-
+Vue.config.performance = true
 new Vue({
   render: h => h(App),
 }).$mount('#app')
