@@ -5,25 +5,25 @@
                     <el-input style="margin-bottom:20px; " v-if="!addFlag" v-model="tempTitle" :disabled="addFlag"></el-input>
                      <el-input style="margin-bottom:20px" v-else-if="deleteEnable " v-model="deleteTitle" :disabled="!deleteEnable"></el-input>
                     <el-row>
-                        <el-button type="primary"  class="buttonOne" round  @click="onAdd" :disabled="!titleFlag">添加列</el-button>
+                        <el-button type="primary"  class="buttonOne" round  @click="onAdd" :disabled="!titleFlag">Add Column</el-button>
                     </el-row>
                     <el-row>
-                        <el-button type="primary" class="buttonOne" round @click="addConfirm" :disabled="addFlag">确定列</el-button>
+                        <el-button type="primary" class="buttonOne" round @click="addConfirm" :disabled="addFlag">Confirm Column</el-button>
                     </el-row>
                     <el-row>
-                        <el-button type="primary" class="buttonOne" round @click="editEnabler" >修改/添加</el-button>
+                        <el-button type="primary" class="buttonOne" round @click="editEnabler" >Update/Insert</el-button>
                     </el-row>
                     <el-row>
-                        <el-button type="primary" class="buttonOne" round @click="editConfirm" :disabled="!edittable ">修改完成</el-button>
+                        <el-button type="primary" class="buttonOne" round @click="editConfirm" :disabled="!edittable ">Update Completed</el-button>
                     </el-row>
                     <el-row>
-                        <el-button type="primary" class="buttonOne" round @click="deleteCol ">删除列</el-button>
+                        <el-button type="primary" class="buttonOne" round @click="deleteCol ">Delete Column</el-button>
                     </el-row>
                     <el-row>
-                        <el-button type="primary" class="buttonOne" round @click="confirmCol" :disabled="!deleteEnable">确认删除</el-button>
+                        <el-button type="primary" class="buttonOne" round @click="confirmCol" :disabled="!deleteEnable">Confirm Delete</el-button>
                     </el-row>
                     <el-row>
-                        <el-button type="primary" class="buttonOne" round @click="cancelOption" >取消</el-button>
+                        <el-button type="primary" class="buttonOne" round @click="cancelOption" >Cancel</el-button>
                     </el-row>
                 </el-col>
                 <el-col style="float:right" :span="19">
@@ -48,7 +48,7 @@
                                     type="danger"
                                     :disabled="!edittable"
                                     @click="handleDelete(scope.$index, scope.row)">
-                                        删除
+                                        Delete
                                     </el-button>
                                 </template>
                             </el-table-column>
@@ -74,11 +74,11 @@
 
 <script>
 import axios from "axios";
-const baseURL = "http://192.168.124.85:3003/formTable/Data"
+const baseURL = "http://192.168.124.12:3003/formTable/Data"
 //const baseURL = "http://192.168.2.12:3003/formTable/Data"
-const nameURL = "http://192.168.124.85:3003/formTable/nameData"//
+const nameURL = "http://192.168.124.12:3003/formTable/nameData"//
 //const nameURL = "http://192.168.2.12:3003/formTable/nameData"
-const tempURL = "http://192.168.124.85:3003/formTable/tempData"
+const tempURL = "http://192.168.124.12:3003/formTable/tempData"
 
 //const tempURL = "http://192.168.2.12:3003/formTable/tempData"
 export default {

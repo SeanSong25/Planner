@@ -17,7 +17,7 @@
                  :options="newoptions"
                  v-model="scope.row.Monday"
                  :show-all-levels="false"
-                 
+                 placeholder="Select"
                  >
                 </el-cascader>
             </template> 
@@ -29,6 +29,7 @@
                  :options="newoptions"
                  v-model="scope.row.Tuesday"
                  :show-all-levels="false"
+                 placeholder="Select"
                  >
                 </el-cascader>
             </template>
@@ -40,6 +41,7 @@
                  :options="newoptions"
                  v-model="scope.row.Wednesday"
                  :show-all-levels="false"
+                 placeholder="Select"
                  >
                 </el-cascader>
             </template>
@@ -51,6 +53,7 @@
                  :options="newoptions"
                  v-model="scope.row.Thursday"
                  :show-all-levels="false"
+                 placeholder="Select"
                  >
                 </el-cascader>
             </template>
@@ -62,6 +65,7 @@
                  :key="cascaderKey+'5'"
                  v-model="scope.row.Friday"
                  :show-all-levels="false"
+                 placeholder="Select"
                 >
                 </el-cascader>
             </template>
@@ -73,6 +77,7 @@
                  :options="newoptions"
                  v-model="scope.row.Saturday"
                  :show-all-levels="false"
+                 placeholder="Select"
                  >
                 </el-cascader>
             </template>
@@ -84,6 +89,7 @@
                  :key="cascaderKey+'7'"
                  v-model="scope.row.Sunday"
                  :show-all-levels="false"
+                 placeholder="Select"
                  >
                 </el-cascader>
             </template>
@@ -108,15 +114,15 @@
 
 <script>
 import axios from "axios"
-const unfilledURL = "http://192.168.124.85:3003/fixedFormTable"
+const unfilledURL = "http://192.168.124.12:3003/fixedFormTable"
 //const unfilledURL = "http://192.168.2.12:3003/fixedFormTable"
-const toFillURL = "http://192.168.124.85:3003/fixedFormTable/filler"
+const toFillURL = "http://192.168.124.12:3003/fixedFormTable/filler"
 //const toFillURL = "http://192.168.2.12:3003/fixedFormTable/filler"
-const updateURL = "http://192.168.124.85:3003/fixedTableUpdate"
+const updateURL = "http://192.168.124.12:3003/fixedTableUpdate"
 //const updateURL = "http://192.168.2.12:3003/fixedTableUpdate"
-const fixedTableDataURL = "http://192.168.124.85:3003/fixedFormTable/tableData"
+const fixedTableDataURL = "http://192.168.124.12:3003/fixedFormTable/tableData"
 //const fixedTableDataURL = "http://192.168.2.12:3003/fixedFormTable/tableData"
-const fixedTableDataDelete = "http://192.168.124.85:3003/fixedFormTable/DeleteData"
+const fixedTableDataDelete = "http://192.168.124.12:3003/fixedFormTable/DeleteData"
 //const fixedTableDataDelete = "http://192.168.2.12:3003/fixedFormTable/DeleteData"
 export default {
     
@@ -153,7 +159,7 @@ export default {
         this.cascaderKey = Date.now();
         let dataRes = await axios.get(fixedTableDataURL+'/'+this.Prop.Title)
         this.fieldData = dataRes.data;
-        console.log(this.fieldData);
+        
     },
     watch:{
         
@@ -162,7 +168,12 @@ export default {
         
         addRow(){
             var newObj = {...this.standardCol};
-            newObj.index = this.fieldData[this.fieldData.length-1].index+1;
+            
+            if(this.fieldData.length>0){
+                newObj.index = this.fieldData[this.fieldData.length-1].index+1;
+            }else{
+                newObj.index = 1;
+            }
             this.fieldData.push(newObj);
             
         },
@@ -175,56 +186,32 @@ export default {
             if(this.multipleSelection.length==0)
             {
                 this.$message({type:'info',
-                message:'请选择至少一个删除对象'})
+                message:'Select at least one option'})
             }
             else{
-                    /*var ind = this.multipleSelection[0].index;
-                    var cnt = 1;
-                    var tempCnt = 0;
-                    var tempInd = ind;
-                    for(let item of this.multipleSelection){
-                        if(item.index==tempInd+1){cnt++; tempInd++;}
-                        else if(item.index-tempInd>1){
-                            this.fieldData.splice(ind,cnt);
-                            tempCnt+=cnt;
-                            ind = item.index-tempCnt;
-                            tempInd = ind;
-                            cnt = 1;
-                        }
-                    }
-                    this.fieldData.splice(ind,cnt);
                     let indexArr = [];
-                    for(let item of this.multipleSelection){
-                            indexArr.push(item.index);}
-                    axios.post(fixedTableDataDelete, {Title: this.Prop.Title, indexArr:indexArr})
-                    for(var i = 0; i<this.fieldData.length; i++){
-                        this.fieldData[i].index = i;
-                    }*/
-                    let indexArr = [];
-                    console.log("selections",this.multipleSelection)
+                    
                     for(let item of this.multipleSelection){
                         indexArr.push(item.index);
                     }
-                    console.log('array', indexArr)
+                    
                     axios.post(fixedTableDataDelete, {Title: this.Prop.Title, indexArr:indexArr}).then(()=>{
                        for(let i of indexArr){
                            this.fieldData.splice(this.fieldData.findIndex(d=>d.index===i),1);
                        }
                        this.tableKey = Date.now();
-                    }).catch((e)=>{
-                        console.log(e)
                     })
                 }
                 
                  this.$message({
                         type: 'success',
-                        message: '删除成功!'
+                        message: 'Deletion Succeeded!'
                 })
             }
         ).catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: 'Cancelled'
           });          
         });
             

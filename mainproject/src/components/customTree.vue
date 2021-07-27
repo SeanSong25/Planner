@@ -23,14 +23,14 @@
             size="mini"
             :disabled = "data.isLeaf"
             @click="() => append(data)">
-            添加
+            add
           </el-button>
           <el-button
             type="text"
             size="mini"
             :disabled="data.id==1"
             @click="() => remove(node, data)">
-            删除
+            delete
           </el-button>
         </span>
       </span>
@@ -42,7 +42,7 @@
             <el-button type="primary" style="text-align:center; display:block; width:100%" 
             @click="submitted" :disabled="!showInput" v-show="showInput">submit</el-button>
             <el-button type="danger" style="text-align:center; margin:0; display:block; width:100%" 
-            @click="withdrawSubmission" :disabled="!showInput" v-show="showInput">取消</el-button>
+            @click="withdrawSubmission" :disabled="!showInput" v-show="showInput">cancel</el-button>
         </el-col>
     </div>
   </div>
@@ -51,9 +51,9 @@
 
 <script>
   
-const treeDataURL = "http://192.168.124.85:3003/tree/Data";
+const treeDataURL = "http://192.168.124.12:3003/tree/Data";
 //const treeDataURL = "http://192.168.2.12:3003/tree/Data";
-//const refreshURL = "http://192.168.124.85:3003/refresh";
+//const refreshURL = "http://192.168.124.12:3003/refresh";
 //const refreshURL = "http://192.168.2.12:3003/refresh";
 import axios from "axios";
   export default {
@@ -92,7 +92,7 @@ import axios from "axios";
       let root = {
         Pid: 0,
         id: 1,
-        label: '我的计划',
+        label: 'My Plans',
         isLeaf: false,
         children:[]
       }
@@ -146,7 +146,7 @@ import axios from "axios";
           const parent = node.parent;
           const children = parent.data.children;
           const index = children.findIndex(d => d.id === data.id);
-          console.log(children)
+          
           let names = [];
           let Obj = [];//array of children indexes to be deleted
           if(children[index].children.length>0){
@@ -166,8 +166,8 @@ import axios from "axios";
                 message: 'Delete completed'
               });
           })  
-        }).catch((err) => {
-          console.log(err);
+        }).catch(() => {
+          
           this.$message({
             type: 'info',
             message: 'Delete canceled'

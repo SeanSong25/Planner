@@ -23,11 +23,11 @@ import updateTree from "./customTree.vue";
 import updateFormTable from "./updateFormTable.vue";
 import FixedFormTable from "./fixedFormTable.vue";
 import axios from "axios";
-const treeDataURL = "http://192.168.124.85:3003/tree/Data";
+const treeDataURL = "http://192.168.124.12:3003/tree/Data";
 //const treeDataURL = "http://192.168.2.12:3003/tree/Data";
-const formtableCreateURL = "http://192.168.124.85:3003/formtableCreate";
+const formtableCreateURL = "http://192.168.124.12:3003/formtableCreate";
 //const formtableCreateURL = "http://192.168.2.12:3003/formtableCreate";
-const fixedtableCreateURL = "http://192.168.124.85:3003/fixedtableCreate";
+const fixedtableCreateURL = "http://192.168.124.12:3003/fixedtableCreate";
 //const fixedtableCreateURL = "http://192.168.2.12:3003/fixedtableCreate";
 export default {
     name:"commonPage",

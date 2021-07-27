@@ -3,9 +3,9 @@
         <el-header >
             <el-menu class="menu" :default-active="activeIndex" mode="horizontal" background-color="#203f47"
             text-color="#f5fab1" active-text-color="#d3fab1">
-                    <el-menu-item index="1" class="menu-class-noleftmargin" @click="activeIndex='1'">计划</el-menu-item>
-                    <el-menu-item index="2" class="menu-class-noleftmargin" @click="activeIndex='2'">录像</el-menu-item>
-                    <el-menu-item index="3" class="menu-class-noleftmargin" @click="activeIndex='3'">统计</el-menu-item>
+                    <el-menu-item index="1" class="menu-class-noleftmargin" @click="activeIndex='1'">Plans</el-menu-item>
+                    <el-menu-item index="2" class="menu-class-noleftmargin" @click="activeIndex='2'">Films</el-menu-item>
+                    <el-menu-item index="3" class="menu-class-noleftmargin" @click="activeIndex='3'">Statistics</el-menu-item>
             </el-menu>
         </el-header>
         <el-main><commonPage v-show="activeIndex==1"></commonPage></el-main>
