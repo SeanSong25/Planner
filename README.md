@@ -1,6 +1,7 @@
 # Planner
 A customizable planner app to make your dailey plans!!
-This is a CRUD App in which you can create 2 kinds of tables to make multiple detailed plans and store them inside the database.
+## Link to live website: http://xiaoyan.ltd
+This is a CRUD App in which you can create 2 kinds of tables to make multiple detailed plans and store them inside the database. 
 - The first one is a weekly task table, you can add title to it, and add tasks to it by selecting the drop down menus of each cell after updating the detailed plans.  
 - The detailed plans will provide titles that the weekly task tables would use to render the options for the cells. You can add columns, rows, and update or delete this table.
 
